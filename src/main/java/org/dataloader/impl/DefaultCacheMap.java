@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * CacheMap的默认实现：LinkedHashMap
+ *
  * Default implementation of {@link CacheMap} that is based on a regular {@link java.util.LinkedHashMap}.
  *
  * @param <U> type parameter indicating the type of the cache keys

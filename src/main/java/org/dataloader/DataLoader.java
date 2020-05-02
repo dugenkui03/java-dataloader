@@ -63,12 +63,13 @@ public class DataLoader<K, V> {
     private final StatisticsCollector stats;
 
     /**
-     * Creates new DataLoader with the specified batch loader function and default options
-     * (batching, caching and unlimited batch size).
+     * 使用指定的batch loader创建dataloaser，默认使用批量的、缓存的、不限制大小
      *
-     * @param batchLoadFunction the batch load function to use
-     * @param <K>               the key type
-     * @param <V>               the value type
+     * Creates new DataLoader with the specified batch loader function and default options (batching, caching and unlimited(没有限制的) batch size).
+     *
+     * @param batchLoadFunction the batch load function to use 要使用的批量加载函数
+     * @param <K>               the key type key类型
+     * @param <V>               the value type value类型
      * @return a new DataLoader
      */
     public static <K, V> DataLoader<K, V> newDataLoader(BatchLoader<K, V> batchLoadFunction) {
@@ -76,6 +77,8 @@ public class DataLoader<K, V> {
     }
 
     /**
+     * 使用指定的batch loader和option创建dataloaser
+     *
      * Creates new DataLoader with the specified batch loader function with the provided options
      *
      * @param batchLoadFunction the batch load function to use

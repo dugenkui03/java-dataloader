@@ -20,10 +20,12 @@ public class DataLoaderRegistry {
     private final Map<String, DataLoader<?, ?>> dataLoaders = new ConcurrentHashMap<>();
 
     /**
+     * 注册dataloader；
+     *
      * This will register a new dataloader
      *
-     * @param key        the key to put the data loader under
-     * @param dataLoader the data loader to register
+     * @param key        the key to put the data loader under dataLoader对应的key
+     * @param dataLoader the data loader to register 要注册的dataLoader
      * @return this registry
      */
     public DataLoaderRegistry register(String key, DataLoader<?, ?> dataLoader) {
@@ -73,7 +75,7 @@ public class DataLoaderRegistry {
     }
 
     /**
-     * This will unregister a new dataloader
+     * This will unregister a new dataloader 取消对某个dataloader的注册
      *
      * @param key the key of the data loader to unregister
      * @return this registry
@@ -104,6 +106,7 @@ public class DataLoaderRegistry {
     }
 
     /**
+     * 派遣所有的dataloader
      * This will called {@link org.dataloader.DataLoader#dispatch()} on each of the registered
      * {@link org.dataloader.DataLoader}s
      */

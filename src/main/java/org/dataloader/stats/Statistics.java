@@ -37,8 +37,8 @@ public class Statistics {
     /**
      * A helper to divide two numbers and handle zero
      *
-     * @param numerator   the top bit
-     * @param denominator the bottom bit
+     * @param numerator   the top bit 分子
+     * @param denominator the bottom bit 分母
      *
      * @return numerator / denominator returning zero when denominator is zero
      */
@@ -47,6 +47,8 @@ public class Statistics {
     }
 
     /**
+     * loader的数量
+     *
      * @return the number of objects {@link org.dataloader.DataLoader#load(Object)} has been asked to load
      */
     public long getLoadCount() {

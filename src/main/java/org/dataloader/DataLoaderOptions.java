@@ -25,6 +25,8 @@ import java.util.function.Supplier;
 import static org.dataloader.impl.Assertions.nonNull;
 
 /**
+ * dataloader的配置类
+ *
  * Configuration options for {@link DataLoader} instances.
  *
  * @author <a href="https://github.com/aschrijver/">Arnold Schrijver</a>
@@ -34,12 +36,17 @@ public class DataLoaderOptions {
 
     private static final BatchLoaderContextProvider NULL_PROVIDER = () -> null;
 
+    //是否允许批加载、缓存、"缓存异常"？
     private boolean batchingEnabled;
     private boolean cachingEnabled;
     private boolean cachingExceptionsEnabled;
+
+    //缓存key、缓存Map、最大批处理size
     private CacheKey cacheKeyFunction;
     private CacheMap cacheMap;
     private int maxBatchSize;
+
+    //数据收集器
     private Supplier<StatisticsCollector> statisticsCollector;
     private BatchLoaderContextProvider environmentProvider;
 

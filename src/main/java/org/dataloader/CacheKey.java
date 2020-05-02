@@ -28,11 +28,12 @@ package org.dataloader;
 public interface CacheKey<K> {
 
     /**
+     * 返回输入key对应的cacheKey
      * Returns the cache key that is created from the provided input key.
      *
-     * @param input the input key
+     * @param input the input key 输入key
      *
-     * @return the cache key
+     * @return the cache key 缓存key
      */
     Object getKey(K input);
 }

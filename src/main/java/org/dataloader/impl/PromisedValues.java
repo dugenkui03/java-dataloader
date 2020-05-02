@@ -12,6 +12,11 @@ import java.util.function.Consumer;
 import static java.util.Arrays.asList;
 
 /**
+ * fixme
+ *      允许多个CompletionStage结合在一起并像一个一样完成；
+ *      
+ *
+ *
  * This allows multiple {@link CompletionStage}s to be combined together and completed
  * as one and should something go wrong, instead of throwing {@link CompletionException}s it captures the cause and returns null for that
  * data value, other wise it allows you to access them as a list of values.

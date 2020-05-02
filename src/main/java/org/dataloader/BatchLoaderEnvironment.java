@@ -9,12 +9,14 @@ import java.util.Map;
 import static java.util.Objects.nonNull;
 
 /**
+ * 这个对象传递给batchLoader作为调用上下文。 他包含了调用者的安全证书、或者数据源参数，允许数据层成功调用下游。
+ *
  * This object is passed to a batch loader as calling context.  It could contain security credentials
  * of the calling users for example or database parameters that allow the data layer call to succeed.
  */
 @PublicApi
 public class BatchLoaderEnvironment {
-
+    //总的上下文对象
     private final Object context;
     private final Map<Object, Object> keyContexts;
     private final List<Object> keyContextsList;

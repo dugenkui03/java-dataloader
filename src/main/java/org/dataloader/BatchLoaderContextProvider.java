@@ -8,6 +8,7 @@ package org.dataloader;
 @PublicSpi
 public interface BatchLoaderContextProvider {
     /**
+     * 返回批加载中的上下文，fixme 总的上下文
      * @return a context object that may be needed in batch load calls
      */
     Object getContext();

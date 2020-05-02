@@ -13,6 +13,9 @@ public class Assertions {
         }
     }
 
+    /**
+     * 要求非空
+     */
     public static <T> T nonNull(T t) {
         return Objects.requireNonNull(t, "nonNull object required");
     }
