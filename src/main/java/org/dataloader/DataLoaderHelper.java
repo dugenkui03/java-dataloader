@@ -20,8 +20,9 @@ import static org.dataloader.impl.Assertions.assertState;
 import static org.dataloader.impl.Assertions.nonNull;
 
 /**
+ * 有足浴拆解DataLoader类的功能、包含派遣请求的逻辑。
  * This helps break up the large DataLoader class functionality and it contains the logic to dispatch the
- * promises on behalf of its peer dataloader
+ * promises on behalf(利益) of its peer dataloader
  *
  * @param <K> the type of keys
  * @param <V> the type of values
@@ -29,9 +30,10 @@ import static org.dataloader.impl.Assertions.nonNull;
 @Internal
 class DataLoaderHelper<K, V> {
 
-
+    //任务元素
     class LoaderQueueEntry<K, V> {
 
+        //k-v和请求上下文
         final K key;
         final V value;
         final Object callContext;
@@ -55,11 +57,17 @@ class DataLoaderHelper<K, V> {
         }
     }
 
+    //
     private final DataLoader<K, V> dataLoader;
+    //批量加载函数
     private final Object batchLoadFunction;
+    //dataloader配置类：是否允许批加载、缓存、是否缓存异常情况下的值、缓存key、缓存Map、最大批处理size
     private final DataLoaderOptions loaderOptions;
+    //缓存
     private final CacheMap<Object, CompletableFuture<V>> futureCache;
+    //任务加载队列
     private final List<LoaderQueueEntry<K, CompletableFuture<V>>> loaderQueue;
+    //收集Datalaoder操作的统计数据
     private final StatisticsCollector stats;
 
     DataLoaderHelper(DataLoader<K, V> dataLoader, Object batchLoadFunction, DataLoaderOptions loaderOptions, CacheMap<Object, CompletableFuture<V>> futureCache, StatisticsCollector stats) {
@@ -71,9 +79,12 @@ class DataLoaderHelper<K, V> {
         this.stats = stats;
     }
 
+    //
     Optional<CompletableFuture<V>> getIfPresent(K key) {
         synchronized (dataLoader) {
+            //非null检测、返回原值
             Object cacheKey = getCacheKey(nonNull(key));
+            //如果是允许使用缓存的
             boolean cachingEnabled = loaderOptions.cachingEnabled();
             if (cachingEnabled) {
                 if (futureCache.containsKey(cacheKey)) {
@@ -129,6 +140,7 @@ class DataLoaderHelper<K, V> {
         }
     }
 
+    //根据key获取缓存的cacheKey
     @SuppressWarnings("unchecked")
     Object getCacheKey(K key) {
         return loaderOptions.cacheKeyFunction().isPresent() ?

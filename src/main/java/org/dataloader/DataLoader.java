@@ -467,8 +467,10 @@ public class DataLoader<K, V> {
     }
 
     /**
+     * 将入队的加载请求派遣到执行函数、获取活到异步结果。
      * Dispatches the queued load requests to the batch execution function and returns a promise of the result.
      * <p>
+     * 如果不允许批量加载、或者没有入队的请求，则获取单独的结果
      * If batching is disabled, or there are no queued requests, then a succeeded promise is returned.
      *
      * @return the promise of the queued load requests

@@ -36,7 +36,7 @@ public class DataLoaderOptions {
 
     private static final BatchLoaderContextProvider NULL_PROVIDER = () -> null;
 
-    //是否允许批加载、缓存、"缓存异常"？
+    //是否允许批加载、缓存、是否缓存异常情况下的值
     private boolean batchingEnabled;
     private boolean cachingEnabled;
     private boolean cachingExceptionsEnabled;
@@ -129,6 +129,8 @@ public class DataLoaderOptions {
     }
 
     /**
+     * 是否缓存异常值。
+     *
      * Option that determines whether to cache exceptional values (the default), or not.
      *
      * For short lived caches (that is request caches) it makes sense to cache exceptions since

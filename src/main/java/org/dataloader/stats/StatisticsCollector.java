@@ -3,7 +3,7 @@ package org.dataloader.stats;
 import org.dataloader.PublicSpi;
 
 /**
- * 手机Datalaoder操作的统计数据
+ * 收集Datalaoder操作的统计数据
  *
  * This allows statistics to be collected for {@link org.dataloader.DataLoader} operations
  */
@@ -44,7 +44,7 @@ public interface StatisticsCollector {
     long incrementBatchLoadExceptionCount();
 
     /**
-     * 缓存命中的数量：Called to increment the number of cache hits
+     * 递增缓存命中的数量：Called to increment the number of cache hits
      *
      * @return the current value after increment
      */

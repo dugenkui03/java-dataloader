@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 public class DataLoaderRegistryTest {
     final BatchLoader<Object, Object> identityBatchLoader = CompletableFuture::completedFuture;
 
+    //注册工作？
     @Test
     public void registration_works() throws Exception {
         DataLoader<Object, Object> dlA = new DataLoader<>(identityBatchLoader);
