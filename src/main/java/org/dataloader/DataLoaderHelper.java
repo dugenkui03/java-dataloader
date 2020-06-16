@@ -63,7 +63,7 @@ class DataLoaderHelper<K, V> {
     private final Object batchLoadFunction;
     //dataloader配置类：是否允许批加载、缓存、是否缓存异常情况下的值、缓存key、缓存Map、最大批处理size
     private final DataLoaderOptions loaderOptions;
-    //缓存
+    //数据缓存
     private final CacheMap<Object, CompletableFuture<V>> futureCache;
     //任务加载队列
     private final List<LoaderQueueEntry<K, CompletableFuture<V>>> loaderQueue;
@@ -79,15 +79,16 @@ class DataLoaderHelper<K, V> {
         this.stats = stats;
     }
 
-    //
+    //从缓存获取数据，如果不允许缓存或者不包含则直接返回空
     Optional<CompletableFuture<V>> getIfPresent(K key) {
         synchronized (dataLoader) {
-            //非null检测、返回原值
+            //非null检测、返回原值：获取缓存key
             Object cacheKey = getCacheKey(nonNull(key));
             //如果是允许使用缓存的
             boolean cachingEnabled = loaderOptions.cachingEnabled();
             if (cachingEnabled) {
                 if (futureCache.containsKey(cacheKey)) {
+                    //获取缓存计数器
                     stats.incrementCacheHitCount();
                     return Optional.of(futureCache.get(cacheKey));
                 }
@@ -96,6 +97,7 @@ class DataLoaderHelper<K, V> {
         return Optional.empty();
     }
 
+    //等结果执行结束的时候在返回，futureCache的value是异步任务
     Optional<CompletableFuture<V>> getIfCompleted(K key) {
         synchronized (dataLoader) {
             Optional<CompletableFuture<V>> cachedPromise = getIfPresent(key);
@@ -111,6 +113,7 @@ class DataLoaderHelper<K, V> {
 
 
     CompletableFuture<V> load(K key, Object loadContext) {
+        //todo 加载数据的时候为啥要加锁？
         synchronized (dataLoader) {
             Object cacheKey = getCacheKey(nonNull(key));
             stats.incrementLoadCount();

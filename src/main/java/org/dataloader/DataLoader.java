@@ -365,6 +365,7 @@ public class DataLoader<K, V> {
     }
 
     /**
+     * 返回之前调用 call() 缓存的值，如果之前没有调用、则返回空
      * This will return an optional promise to a value previously loaded via a {@link #load(Object)} call or empty if not call has been made for that key.
      * <p>
      * If you do get a present CompletableFuture it does not mean it has been dispatched and completed yet.  It just means

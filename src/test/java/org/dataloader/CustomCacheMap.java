@@ -3,6 +3,7 @@ package org.dataloader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+//自定义缓存
 public class CustomCacheMap implements CacheMap<String, Object> {
 
     public Map<String, Object> stash;
