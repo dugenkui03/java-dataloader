@@ -11,11 +11,13 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 
 /**
- * This represents code that the java-dataloader project considers public API and has an imperative to be stable within
- * major releases.
+ * This represents code that the java-dataloader project considers public API
+ * and has an imperative(紧急的，必不可少的) to be stable within major releases.
  *
  * The guarantee  is for code calling classes and interfaces with this annotation, not derived from them.  New methods
  * maybe be added which would break derivations but not callers.
+ *
+ * 公共API，
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {CONSTRUCTOR, METHOD, TYPE, FIELD})

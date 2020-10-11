@@ -12,6 +12,8 @@ import static org.dataloader.impl.Assertions.nonNull;
 /**
  * Try is class that allows you to hold the result of computation or the throwable it produced.
  *
+ * fixme 允许持有计算的结果或者抛出的异常。
+ *
  * This class is useful in {@link org.dataloader.BatchLoader}s so you can mix a batch of calls where some of
  * the calls succeeded and some of them failed.  You would make your batch loader declaration like :
  *
@@ -31,7 +33,10 @@ public class Try<V> {
         }
     };
 
+    // 异常信息
     private final Throwable throwable;
+
+    // 结果数据
     private final V value;
 
 
