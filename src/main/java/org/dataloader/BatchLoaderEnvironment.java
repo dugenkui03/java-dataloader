@@ -1,12 +1,12 @@
 package org.dataloader;
 
+import org.dataloader.impl.Assertions;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.Objects.nonNull;
 
 /**
  * 这个对象传递给batchLoader作为调用上下文。 他包含了调用者的安全证书、或者数据源参数，允许数据层成功调用下游。
@@ -80,8 +80,8 @@ public class BatchLoaderEnvironment {
         }
 
         public <K> Builder keyContexts(List<K> keys, List<Object> keyContexts) {
-            nonNull(keys);
-            nonNull(keyContexts);
+            Assertions.nonNull(keys);
+            Assertions.nonNull(keyContexts);
 
             Map<Object, Object> map = new HashMap<>();
             List<Object> list = new ArrayList<>();

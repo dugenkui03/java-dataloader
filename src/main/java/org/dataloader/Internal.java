@@ -10,10 +10,12 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 
 /**
- * This represents code that the java-dataloader project considers internal code that MAY not be stable within
- * major releases.
+ * This represents code that the java-dataloader project considers internal code
+ * that MAY not be stable within major releases.
  *
  * In general unnecessary changes will be avoided but you should not depend on internal classes being stable
+ *
+ * 不稳定的，不建议使用
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {CONSTRUCTOR, METHOD, TYPE, FIELD})

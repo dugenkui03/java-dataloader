@@ -30,8 +30,9 @@ import static org.dataloader.impl.Assertions.nonNull;
 @Internal
 class DataLoaderHelper<K, V> {
 
+
     //任务元素
-    class LoaderQueueEntry<K, V> {
+    static class LoaderQueueEntry<K, V> {
 
         //k-v和 请求上下文/请求参数
         final K key;
@@ -190,7 +191,7 @@ class DataLoaderHelper<K, V> {
 
         //如果不允许批量加载、或者当前key是空的，则直接返回空值
         if (!batchingEnabled || keys.isEmpty()) {
-            return new DispatchResult<V>(CompletableFuture.completedFuture(emptyList()), 0);
+            return new DispatchResult<>(CompletableFuture.completedFuture(emptyList()), 0);
         }
         final int totalEntriesHandled = keys.size();
         // key的顺序
@@ -213,7 +214,7 @@ class DataLoaderHelper<K, V> {
         } else {
             futureList = dispatchQueueBatch(keys, callContexts, queuedFutures);
         }
-        return new DispatchResult<V>(futureList, totalEntriesHandled);
+        return new DispatchResult<>(futureList, totalEntriesHandled);
     }
 
     /**
@@ -243,7 +244,7 @@ class DataLoaderHelper<K, V> {
         }
         //
         // now reassemble all the futures into one that is the complete set of results
-        return CompletableFuture.allOf(allBatches.toArray(new CompletableFuture[allBatches.size()]))
+        return CompletableFuture.allOf(allBatches.toArray(new CompletableFuture[0]))
                 .thenApply(v -> allBatches.stream()
                         .map(CompletableFuture::join)
                         .flatMap(Collection::stream)

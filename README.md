@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/graphql-java/java-dataloader.svg?branch=master)](https://travis-ci.org/graphql-java/java-dataloader.svg?branch=master)&nbsp;&nbsp;
 [![Apache licensed](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/graphql-java/java-dataloader/blob/master/LICENSE)&nbsp;&nbsp;
-[![Download](https://api.bintray.com/packages/bbakerman/java-dataloader/java-dataloader/images/download.svg) ](https://bintray.com/bbakerman/java-dataloader/java-dataloader/_latestVersion)
+[![Download](https://api.bintray.com/packages/graphql-java/graphql-java/java-dataloader/images/download.svg)](https://bintray.com/graphql-java/graphql-java/java-dataloader/_latestVersion)
 
 This small and simple utility library is a pure Java 8 port of [Facebook DataLoader](https://github.com/facebook/dataloader). 
 
@@ -121,7 +121,7 @@ maintain minimal outgoing data requests.
 
 In the example above, the first call to dispatch will cause the batched user keys (1 and 2) to be fired at the BatchLoader function to load 2 users.
   
-Since each `thenAccept` callback made more calls to `userLoader` to get the "user they they invited", another 2 user keys are given at the `BatchLoader` 
+Since each `thenAccept` callback made more calls to `userLoader` to get the "user they have invited", another 2 user keys are given at the `BatchLoader` 
 function for them.    
 
 In this case the `userLoader.dispatchAndJoin()` is used to make a dispatch call, wait for it (aka join it), see if the data loader has more batched entries, (which is does)
