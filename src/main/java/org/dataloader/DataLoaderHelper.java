@@ -34,9 +34,11 @@ class DataLoaderHelper<K, V> {
     //任务元素
     static class LoaderQueueEntry<K, V> {
 
-        //k-v和 请求上下文/请求参数
+        //k-v
         final K key;
         final V value;
+
+        // 请求上下文
         final Object callContext;
 
         public LoaderQueueEntry(K key, V value, Object callContext) {
@@ -58,16 +60,20 @@ class DataLoaderHelper<K, V> {
         }
     }
 
-    //
     private final DataLoader<K, V> dataLoader;
+
     //批量加载函数
     private final Object batchLoadFunction;
+
     //dataloader配置类：是否允许批加载、缓存、是否缓存异常情况下的值、缓存key、缓存Map、最大批处理size
     private final DataLoaderOptions loaderOptions;
+
     //数据缓存
     private final CacheMap<Object, CompletableFuture<V>> futureCache;
+
     //任务加载队列
     private final List<LoaderQueueEntry<K, CompletableFuture<V>>> loaderQueue;
+
     //收集Datalaoder操作的统计数据
     private final StatisticsCollector stats;
 
@@ -165,6 +171,7 @@ class DataLoaderHelper<K, V> {
                 loaderOptions.cacheKeyFunction().get().getKey(key) : key;
     }
 
+    // 入口方法
     DispatchResult<V> dispatch() {
         //是否允许批量加载
         boolean batchingEnabled = loaderOptions.batchingEnabled();

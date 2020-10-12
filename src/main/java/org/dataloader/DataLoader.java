@@ -29,49 +29,82 @@ import java.util.concurrent.CompletableFuture;
 import static org.dataloader.impl.Assertions.nonNull;
 
 /**
- * Data loader is a utility class that allows batch loading of data that is identified by a set of unique keys. For
- * each key that is loaded a separate {@link CompletableFuture} is returned, that completes as the batch function completes.
+ * Data loader is a utility class that allows batch loading of data that is identified by a set of unique keys.
+ * For each key that is loaded a separate {@link CompletableFuture} is returned, that completes as the batch function completes.
+ *
+ * fixme
+ *      使用有唯一标志的key、批量加载下游数据。
+ *
  * <p>
- * With batching enabled the execution will start after calling {@link DataLoader#dispatch()}, causing the queue of
- * loaded keys to be sent to the batch function, clears the queue, and returns a promise to the values.
+ * With batching enabled the execution will start after calling {@link DataLoader#dispatch()},
+ * causing the queue of loaded keys to be sent to the batch function, clears the queue, and returns a promise to the values.
+ *
+ * fixme
+ *      入口方法 {@link DataLoader#dispatch()}
+ *
  * <p>
- * As {@link org.dataloader.BatchLoader} batch functions are executed the resulting futures are cached using a cache
- * implementation of choice, so they will only execute once. Individual cache keys can be cleared, so they will
- * be re-fetched when referred to again.
+ * As {@link BatchLoader} batch functions are executed the resulting futures are cached
+ * using a cache implementation of choice, so they will only execute once.
+ *
+ * Individual cache keys can be cleared, so they will be re-fetched when referred to again.
+ *
+ *
  * <p>
  * It is also possible to clear the cache entirely, and prime it with values before they are used.
+ *
  * <p>
  * Both caching and batching can be disabled. Configuration of the data loader is done by providing a
  * {@link DataLoaderOptions} instance on creation.
+ *
+ * fixme 是否缓存和批量加载都可以通过 DataLoaderOptions 配置。
+ *
+ *
  * <p>
- * A call to the batch loader might result in individual exception failures for item with the returned list.  if
- * you want to capture these specific item failures then use {@link org.dataloader.Try} as a return value and
- * create the data loader with {@link #newDataLoaderWithTry(BatchLoader)} form.  The Try values will be interpreted
- * as either success values or cause the {@link #load(Object)} promise to complete exceptionally.
+ * A call to the batch loader might result in individual exception failures for item with the returned list.
+ * if you want to capture these specific item failures then use {@link Try} as a return value
+ * and create the data loader with {@link #newDataLoaderWithTry(BatchLoader)} form.
+ *
+ * The Try values will be interpreted as either success values or cause the {@link #load(Object)} promise to complete exceptionally.
+ *
+ * fixme 如果想要同时获取 正常结果 和 异常信息 作为返回结果元素，则可通过 newDataLoaderWithTry、将Try指定为结果类型。
  *
  * @param <K> type parameter indicating the type of the data load keys
  * @param <V> type parameter indicating the type of the data that is returned
+ *
  * @author <a href="https://github.com/aschrijver/">Arnold Schrijver</a>
  * @author <a href="https://github.com/bbakerman/">Brad Baker</a>
  */
 @PublicApi
 public class DataLoader<K, V> {
 
+    // 协助类
     private final DataLoaderHelper<K, V> helper;
-    private final CacheMap<Object, CompletableFuture<V>> futureCache;
+
+    // 缓存类
+    private final CacheMap<Object, CompletableFuture<V>> cacheMap;
+
+    // 收集Dataloader操作的统计数据，有多个实现类
     private final StatisticsCollector stats;
+
+    /**
+     * fixme ==================================================== 创建实例的静态方法  ======================================================
+     */
 
     /**
      * 使用指定的batch loader创建dataloaser，默认使用批量的、缓存的、不限制大小
      *
      * Creates new DataLoader with the specified batch loader function and default options (batching, caching and unlimited(没有限制的) batch size).
      *
-     * @param batchLoadFunction the batch load function to use 要使用的批量加载函数
+     * @param batchLoadFunction the batch load function to use
+     *                          要使用的批量加载函数: CompletionStage<List<V>> load(List<K> keys)
+     *
      * @param <K>               the key type key类型
      * @param <V>               the value type value类型
+     *
      * @return a new DataLoader
      */
     public static <K, V> DataLoader<K, V> newDataLoader(BatchLoader<K, V> batchLoadFunction) {
+        // dataLoaderOptions 默认配置为null：是否允许批加载、是否使用缓存、是否缓存异常情况下的值、缓存配置等
         return newDataLoader(batchLoadFunction, null);
     }
 
@@ -315,6 +348,14 @@ public class DataLoader<K, V> {
     }
 
     /**
+     * fixme ==================================================== end of 创建实例的静态方法  ======================================================
+     */
+
+
+    /**
+     * fixme ==================================================== 构造函数  ======================================================
+     */
+    /**
      * Creates a new data loader with the provided batch load function, and default options.
      *
      * @param batchLoadFunction the batch load function to use
@@ -334,17 +375,31 @@ public class DataLoader<K, V> {
     }
 
     private DataLoader(Object batchLoadFunction, DataLoaderOptions options) {
+        // 默认配置
         DataLoaderOptions loaderOptions = options == null ? new DataLoaderOptions() : options;
-        this.futureCache = determineCacheMap(loaderOptions);
+
+
+        this.cacheMap = determineCacheMap(loaderOptions);
         // order of keys matter in data loader
         this.stats = nonNull(loaderOptions.getStatisticsCollector());
 
-        this.helper = new DataLoaderHelper<>(this, batchLoadFunction, loaderOptions, this.futureCache, this.stats);
+        this.helper = new DataLoaderHelper<>(this, batchLoadFunction, loaderOptions, this.cacheMap, this.stats);
     }
 
+    /**
+     * fixme ==================================================== end of 构造函数  ======================================================
+     */
+
+    /**
+     * 使用配置信息构造 CacheMap
+     */
     @SuppressWarnings("unchecked")
     private CacheMap<Object, CompletableFuture<V>> determineCacheMap(DataLoaderOptions loaderOptions) {
-        return loaderOptions.cacheMap().isPresent() ? (CacheMap<Object, CompletableFuture<V>>) loaderOptions.cacheMap().get() : CacheMap.simpleMap();
+        return loaderOptions.cacheMap().isPresent() ?
+                // 获取配置中的 CacheMap
+                (CacheMap<Object, CompletableFuture<V>>) loaderOptions.cacheMap().get() :
+                // 使用默认的 CacheMap：使用HashMap保存数据
+                CacheMap.simpleMap();
     }
 
     /**
@@ -465,8 +520,11 @@ public class DataLoader<K, V> {
     }
 
     /**
+     * fixme: 入口方法。
+     *
      * 将入队的加载请求派遣到执行函数、获取活到异步结果。
      * Dispatches the queued load requests to the batch execution function and returns a promise of the result.
+     *
      * <p>
      * 如果不允许批量加载、或者没有入队的请求，则获取单独的结果
      * If batching is disabled, or there are no queued requests, then a succeeded promise is returned.
@@ -527,7 +585,7 @@ public class DataLoader<K, V> {
     public DataLoader<K, V> clear(K key) {
         Object cacheKey = getCacheKey(key);
         synchronized (this) {
-            futureCache.delete(cacheKey);
+            cacheMap.delete(cacheKey);
         }
         return this;
     }
@@ -539,7 +597,7 @@ public class DataLoader<K, V> {
      */
     public DataLoader<K, V> clearAll() {
         synchronized (this) {
-            futureCache.clear();
+            cacheMap.clear();
         }
         return this;
     }
@@ -554,8 +612,8 @@ public class DataLoader<K, V> {
     public DataLoader<K, V> prime(K key, V value) {
         Object cacheKey = getCacheKey(key);
         synchronized (this) {
-            if (!futureCache.containsKey(cacheKey)) {
-                futureCache.set(cacheKey, CompletableFuture.completedFuture(value));
+            if (!cacheMap.containsKey(cacheKey)) {
+                cacheMap.set(cacheKey, CompletableFuture.completedFuture(value));
             }
         }
         return this;
@@ -570,8 +628,8 @@ public class DataLoader<K, V> {
      */
     public DataLoader<K, V> prime(K key, Exception error) {
         Object cacheKey = getCacheKey(key);
-        if (!futureCache.containsKey(cacheKey)) {
-            futureCache.set(cacheKey, CompletableFutureKit.failedFuture(error));
+        if (!cacheMap.containsKey(cacheKey)) {
+            cacheMap.set(cacheKey, CompletableFutureKit.failedFuture(error));
         }
         return this;
     }

@@ -36,7 +36,7 @@ public class DataLoaderOptions {
 
     private static final BatchLoaderContextProvider NULL_PROVIDER = () -> null;
 
-    //是否允许批加载、缓存、是否缓存异常情况下的值
+    //是否允许批加载、是否使用缓存、是否缓存异常情况下的值、缓存配置等
     private boolean batchingEnabled;
     private boolean cachingEnabled;
     private boolean cachingExceptionsEnabled;
@@ -52,6 +52,12 @@ public class DataLoaderOptions {
 
     /**
      * Creates a new data loader options with default settings.
+     * fixme
+     *      默认配置：允许批量加载
+     *              缓存并缓存异常结果
+     *              批处理size没有限制
+     *              AtomicLong包装的统计器
+     *              批量加载上下文提供者：啥也没有。
      */
     public DataLoaderOptions() {
         batchingEnabled = true;
@@ -207,6 +213,7 @@ public class DataLoaderOptions {
      * before they are split into multiple class
      *
      * @return the maximum batch size or -1 if there is no limit
+     *         允许的最大批量大小，-1表示没有限制
      */
     public int maxBatchSize() {
         return maxBatchSize;

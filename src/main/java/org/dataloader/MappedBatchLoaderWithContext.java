@@ -16,8 +16,6 @@
 
 package org.dataloader;
 
-// todo
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
@@ -31,11 +29,16 @@ import java.util.concurrent.CompletionStage;
  * use this interface.
  */
 public interface MappedBatchLoaderWithContext<K, V> {
+
     /**
      * Called to batch load the provided keys and return a promise to a map of values.
+     * fixme 带有请求上下文。
      *
      * @param keys        the set of keys to load
+     *                    请求参数
+     *
      * @param environment the calling environment
+     *                    批量加载上下文
      *
      * @return a promise to a map of values for those keys
      */

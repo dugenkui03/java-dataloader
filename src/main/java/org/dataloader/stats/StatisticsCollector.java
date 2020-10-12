@@ -3,7 +3,7 @@ package org.dataloader.stats;
 import org.dataloader.PublicSpi;
 
 /**
- * 收集Datalaoder操作的统计数据，有多个实现类
+ * 收集Dataloader操作的统计数据，有多个实现类
  *
  * This allows statistics to be collected for {@link org.dataloader.DataLoader} operations
  */

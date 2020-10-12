@@ -83,6 +83,7 @@ public class BatchLoaderEnvironment {
             return this;
         }
 
+        // fixme 重点方法
         public <K> Builder keyContexts(List<K> keys, List<Object> keyContexts) {
             // todo assert not empty.
             Assertions.nonNull(keys);
