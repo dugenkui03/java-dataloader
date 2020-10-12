@@ -7,10 +7,20 @@ import java.util.Map;
 
 /**
  * This holds statistics on how a {@link org.dataloader.DataLoader} has performed
+ *
+ * 对于 DataLoader 的统计数据。
  */
 @PublicApi
 public class Statistics {
 
+    /**
+     * load次数、
+     * load错误次数、
+     * 批量调用次数、
+     * 批量load次数、
+     * 批量load异常次数、
+     * 缓存命中次数
+     */
     private final long loadCount;
     private final long loadErrorCount;
     private final long batchInvokeCount;

@@ -35,6 +35,7 @@ import java.util.Map;
 @Internal
 public class DefaultCacheMap<U, V> implements CacheMap<U, V> {
 
+    // 使用的是个hashMap.
     private final Map<U, V> cache;
 
     /**

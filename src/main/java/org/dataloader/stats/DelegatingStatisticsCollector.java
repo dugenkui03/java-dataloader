@@ -3,13 +3,20 @@ package org.dataloader.stats;
 import static org.dataloader.impl.Assertions.nonNull;
 
 /**
- * This statistics collector keeps dataloader statistics AND also calls the delegate
- * collector at the same time.  This allows you to keep a specific set of statistics
+ * This statistics collector keeps dataloader statistics
+ * AND also calls the delegate collector at the same time.
+ *
+ * This allows you to keep a specific set of statistics
  * and also delegate the calls onto another collector.
+ *
+ * fixme
+ *      该统计数据收集器保存dataLoader的统计数据，同时也调用了 派遣收集器。
+ *      这种实现允许你保存一组统计数据，同时调用另外一个收集器。
  */
 public class DelegatingStatisticsCollector implements StatisticsCollector {
 
     private final StatisticsCollector collector = new SimpleStatisticsCollector();
+
     private final StatisticsCollector delegateCollector;
 
     /**

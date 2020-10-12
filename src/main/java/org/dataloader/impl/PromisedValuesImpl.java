@@ -18,11 +18,17 @@ import static org.dataloader.impl.Assertions.nonNull;
 @Internal
 public class PromisedValuesImpl<T> implements PromisedValues<T> {
 
+    // 异步任务列表
     private final List<? extends CompletionStage<T>> futures;
+
+    // ？控制者？
     private final CompletionStage<Void> controller;
+
+    // ？异常的原子引用？
     private final AtomicReference<Throwable> cause;
 
     private PromisedValuesImpl(List<? extends CompletionStage<T>> cs) {
+        //非null检测
         this.futures = nonNull(cs);
         this.cause = new AtomicReference<>();
         CompletableFuture[] futuresArray = cs.stream().map(CompletionStage::toCompletableFuture).toArray(CompletableFuture[]::new);
@@ -50,9 +56,11 @@ public class PromisedValuesImpl<T> implements PromisedValues<T> {
         return new PromisedValuesImpl<>(cfs);
     }
 
+
     private void setCause(Throwable throwable) {
         if (throwable != null) {
             if (throwable instanceof CompletionException && throwable.getCause() != null) {
+                // 更新异常信息
                 cause.set(throwable.getCause());
             } else {
                 cause.set(throwable);
@@ -82,6 +90,7 @@ public class PromisedValuesImpl<T> implements PromisedValues<T> {
         return isDone() && cause.get() != null;
     }
 
+    // 所有的任务是否已经完成
     @Override
     public boolean isDone() {
         return controller.toCompletableFuture().isDone();

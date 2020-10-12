@@ -2,6 +2,8 @@ package org.dataloader.stats;
 
 /**
  * A statistics collector that does nothing
+ *
+ * 不做任何统计。
  */
 public class NoOpStatisticsCollector implements StatisticsCollector {
 

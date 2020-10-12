@@ -16,9 +16,13 @@ import java.util.Map;
  */
 @PublicApi
 public class BatchLoaderEnvironment {
-    //总的上下文对象
+    // 批量加载上下文
     private final Object context;
+
+    // key上下文
     private final Map<Object, Object> keyContexts;
+
+    // key上下文对象列表
     private final List<Object> keyContextsList;
 
     private BatchLoaderEnvironment(Object context, List<Object> keyContextsList, Map<Object, Object> keyContexts) {
@@ -80,12 +84,14 @@ public class BatchLoaderEnvironment {
         }
 
         public <K> Builder keyContexts(List<K> keys, List<Object> keyContexts) {
+            // todo assert not empty.
             Assertions.nonNull(keys);
             Assertions.nonNull(keyContexts);
 
             Map<Object, Object> map = new HashMap<>();
             List<Object> list = new ArrayList<>();
             for (int i = 0; i < keys.size(); i++) {
+                // fixme 必须都是 ArrayList 啊，要不然 get(i) 操作开销有点大
                 K key = keys.get(i);
                 Object keyContext = null;
                 if (i < keyContexts.size()) {

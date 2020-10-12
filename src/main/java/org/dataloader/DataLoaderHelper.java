@@ -320,12 +320,24 @@ class DataLoaderHelper<K, V> {
 
 
     CompletableFuture<V> invokeLoaderImmediately(K key, Object keyContext) {
+        // 将请求key包装为单个元素的list
         List<K> keys = singletonList(key);
+
+        List<Object> keysContextList = singletonList(keyContext);
+
         CompletionStage<V> singleLoadCall;
         try {
+            //获取批量加载上下文
             Object context = loaderOptions.getBatchLoaderContextProvider().getContext();
-            BatchLoaderEnvironment environment = BatchLoaderEnvironment.newBatchLoaderEnvironment()
-                    .context(context).keyContexts(keys, singletonList(keyContext)).build();
+
+            // 批量加载参数
+            BatchLoaderEnvironment environment = BatchLoaderEnvironment
+                                                    .newBatchLoaderEnvironment()
+                                                    // 批量加载上下文
+                                                    .context(context)
+                                                    // key上下文及其对应的上下文
+                                                    .keyContexts(keys, keysContextList)
+                                                    .build();
             if (isMapLoader()) {
                 singleLoadCall = invokeMapBatchLoader(keys, environment).thenApply(list -> list.get(0));
             } else {

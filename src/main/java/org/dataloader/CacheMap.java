@@ -34,6 +34,9 @@ import java.util.concurrent.CompletableFuture;
  *
  * @author <a href="https://github.com/aschrijver/">Arnold Schrijver</a>
  * @author <a href="https://github.com/bbakerman/">Brad Baker</a>
+ *
+ * fixme
+ *      DataLoader使用的缓存接口。
  */
 @PublicSpi
 public interface CacheMap<U, V> {
