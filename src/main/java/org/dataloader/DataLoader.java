@@ -341,7 +341,7 @@ public class DataLoader<K, V> {
 
     @SuppressWarnings("unchecked")
     private CacheMap<Object, CompletableFuture<V>> determineCacheMap(DataLoaderOptions loaderOptions) {
-        return loaderOptions.cacheMap().isPresent() ? (CacheMap<Object, CompletableFuture<V>>) loaderOptions.cacheMap().get() : CacheMap.simpleMap();
+        return loaderOptions.cacheMap().orElseGet(()-> CacheMap.simpleMap());
     }
 
     /**
