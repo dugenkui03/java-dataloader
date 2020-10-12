@@ -402,6 +402,9 @@ class DataLoaderHelper<K, V> {
         });
     }
 
+    /**
+     * @return 批量加载函数是否是 map批量加载{@link MappedBatchLoader} 或者 带有上下文的map批量加载{@link MappedBatchLoaderWithContext}
+     */
     private boolean isMapLoader() {
         return batchLoadFunction instanceof MappedBatchLoader || batchLoadFunction instanceof MappedBatchLoaderWithContext;
     }
