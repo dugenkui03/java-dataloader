@@ -16,7 +16,6 @@
 
 package org.dataloader;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
@@ -51,8 +50,8 @@ import java.util.concurrent.CompletionStage;
  * This means that if 10 keys are asked for then {@link DataLoader#dispatch()} will return a promise of 10 value results and each
  * of the {@link org.dataloader.DataLoader#load(Object)} will complete with a value, null or an exception.
  *
- * @param <K> type parameter indicating the type of keys to use for data load requests.
- * @param <V> type parameter indicating the type of values returned
+ * @param <K> type parameter indicating the type of elements in keys to use for data load requests.
+ * @param <V> type parameter indicating the type of mapped values in value returned
  *
  */
 public interface MappedBatchLoader<K, V> {
