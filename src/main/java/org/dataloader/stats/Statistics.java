@@ -157,6 +157,8 @@ public class Statistics {
     }
 
     /**
+     * 将当前对象转换为map
+     *
      * @return a map representation of the statistics, perhaps to send over JSON or some such
      */
     public Map<String, Number> toMap() {
