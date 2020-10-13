@@ -56,12 +56,12 @@ public class DataLoaderMapBatchLoaderTest {
         return DataLoader.newMappedDataLoader(kvBatchLoader, options);
     }
 
-    private static <K, V> DataLoader<K, V> idMapLoaderBlowsUps(
-            DataLoaderOptions options, List<Collection<K>> loadCalls) {
+    private static <K, V> DataLoader<K, V> idMapLoaderBlowsUps(DataLoaderOptions options, List<Collection<K>> loadCalls) {
         return new DataLoader<>((keys) -> {
             loadCalls.add(new ArrayList<>(keys));
             return futureError();
-        }, options);
+        }
+        , options);
     }
 
 

@@ -23,7 +23,6 @@ public class UserManager {
     public static final User SAURON = new User(5L, 10005L, "Sauron");
 
     final Map<Long, User> users = new LinkedHashMap<>();
-
     {
         add(ILÚVATAR);
 
@@ -39,7 +38,6 @@ public class UserManager {
         add(OLÓRIN);
         add(SAURON);
     }
-
     private void add(User user) {
         users.put(user.getId(), user);
     }
