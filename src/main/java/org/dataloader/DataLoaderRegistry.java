@@ -11,18 +11,18 @@ import java.util.function.Function;
 import org.dataloader.stats.Statistics;
 
 /**
- * This allows data loaders to be registered together into a single place so
- * they can be dispatched as one.  It also allows you to retrieve data loaders by
- * name from a central place
+ * This allows data loaders to be registered together into a single place so they can be dispatched as one.
+ * It also allows you to retrieve data loaders by name from a central place.
+ *
+ * 允许将多个dataLoader作为一个dataLoader使用；也可以根据dataLoader名称、获取指定的dataLoader。
  */
 @PublicApi
 public class DataLoaderRegistry {
+    // dataLoader注册map
     private final Map<String, DataLoader<?, ?>> dataLoaders = new ConcurrentHashMap<>();
 
     /**
-     * 注册dataloader；
-     *
-     * This will register a new dataloader
+     * This will register a new dataloader.
      *
      * @param key        the key to put the data loader under dataLoader对应的key
      * @param dataLoader the data loader to register 要注册的dataLoader
@@ -53,7 +53,8 @@ public class DataLoaderRegistry {
     }
 
     /**
-     * This will combine all the current data loaders in this registry and all the data loaders from the specified registry
+     * This will combine all the current data loaders in this registry
+     * and all the data loaders from the specified registry
      * and return a new combined registry
      *
      * @param registry the registry to combine into this registry
@@ -106,8 +107,8 @@ public class DataLoaderRegistry {
     }
 
     /**
-     * 派遣所有的dataloader
-     * This will called {@link org.dataloader.DataLoader#dispatch()} on each of the registered
+     * This will called {@link DataLoader#dispatch()} on each of the registered
+     *
      * {@link org.dataloader.DataLoader}s
      */
     public void dispatchAll() {
@@ -115,10 +116,10 @@ public class DataLoaderRegistry {
     }
 
     /**
-     * Similar to {@link DataLoaderRegistry#dispatchAll()}, this calls {@link org.dataloader.DataLoader#dispatch()} on
-     * each of the registered {@link org.dataloader.DataLoader}s, but returns the number of dispatches.
+     * Similar to {@link DataLoaderRegistry#dispatchAll()}, this calls {@link DataLoader#dispatch()} on
+     * each of the registered {@link DataLoader}s, but returns the number of dispatches.
      *
-     * @return total number of entries that were dispatched from registered {@link org.dataloader.DataLoader}s.
+     * @return total number of entries that were dispatched from registered {@link DataLoader}s.
      */
     public int dispatchAllWithCount() {
         int sum = 0;
@@ -129,8 +130,9 @@ public class DataLoaderRegistry {
     }
 
     /**
-     * @return The sum of all batched key loads that need to be dispatched from all registered
-     * {@link org.dataloader.DataLoader}s
+     * @return The sum of all batched key loads
+     *         that need to be dispatched from all registered {@link DataLoader}s
+     *         加载的key的数量。
      */
     public int dispatchDepth() {
         int totalDispatchDepth = 0;
@@ -147,6 +149,7 @@ public class DataLoaderRegistry {
     public Statistics getStatistics() {
         Statistics stats = new Statistics();
         for (DataLoader<?, ?> dataLoader : dataLoaders.values()) {
+            // 将当前的数据和目标对象数据做累加
             stats = stats.combine(dataLoader.getStatistics());
         }
         return stats;

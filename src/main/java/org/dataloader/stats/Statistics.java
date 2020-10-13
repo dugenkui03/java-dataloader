@@ -137,7 +137,9 @@ public class Statistics {
 
 
     /**
-     * This will combine this set of statistics with another set of statistics so that they become the combined count of each
+     * This will combine this set of statistics with another set of statistics so that they become the combined count of each。
+     *
+     * fixme 将当前的数据和目标对象数据做累加，返回新对象。
      *
      * @param other the other statistics to combine
      *
