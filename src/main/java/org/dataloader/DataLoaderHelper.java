@@ -31,7 +31,9 @@ import static org.dataloader.impl.Assertions.nonNull;
 class DataLoaderHelper<K, V> {
 
 
-    //任务元素
+    /**
+     * 内部类：任务元素
+     */
     static class LoaderQueueEntry<K, V> {
 
         //k-v
@@ -74,10 +76,14 @@ class DataLoaderHelper<K, V> {
     //任务加载队列
     private final List<LoaderQueueEntry<K, CompletableFuture<V>>> loaderQueue;
 
-    //收集Datalaoder操作的统计数据
+    //收集Dataloader操作的统计数据
     private final StatisticsCollector stats;
 
-    DataLoaderHelper(DataLoader<K, V> dataLoader, Object batchLoadFunction, DataLoaderOptions loaderOptions, CacheMap<Object, CompletableFuture<V>> futureCache, StatisticsCollector stats) {
+    DataLoaderHelper(DataLoader<K, V> dataLoader,
+                     Object batchLoadFunction,
+                     DataLoaderOptions loaderOptions,
+                     CacheMap<Object, CompletableFuture<V>> futureCache,
+                     StatisticsCollector stats) {
         this.dataLoader = dataLoader;
         this.batchLoadFunction = batchLoadFunction;
         this.loaderOptions = loaderOptions;

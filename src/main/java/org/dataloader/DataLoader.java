@@ -378,7 +378,6 @@ public class DataLoader<K, V> {
         // 默认配置
         DataLoaderOptions loaderOptions = options == null ? new DataLoaderOptions() : options;
 
-
         this.cacheMap = determineCacheMap(loaderOptions);
         // order of keys matter in data loader
         this.stats = nonNull(loaderOptions.getStatisticsCollector());
