@@ -17,8 +17,10 @@
 package org.dataloader;
 
 /**
- * Function that is invoked on input keys of type {@code K} to derive keys that are required by the {@link CacheMap}
- * implementation.
+ * Function that is invoked on input keys of type {@code K} to derive keys
+ * that are required by the {@link CacheMap} implementation.
+ *
+ * fixme 将输入key包装为缓存key。
  *
  * @param <K> type parameter indicating the type of the input key
  *
@@ -28,12 +30,14 @@ package org.dataloader;
 public interface CacheKey<K> {
 
     /**
-     * 返回输入key对应的cacheKey
      * Returns the cache key that is created from the provided input key.
+     * 返回输入key对应的cacheKey，例如请求是1，缓存key可能转换为字符串类型"1"
      *
-     * @param input the input key 输入key
+     * @param input the input key
+     *              输入key
      *
-     * @return the cache key 缓存key
+     * @return the cache key
+     *         缓存key
      */
     Object getKey(K input);
 }

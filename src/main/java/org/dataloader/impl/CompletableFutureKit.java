@@ -23,7 +23,6 @@ public class CompletableFutureKit {
         return future;
     }
 
-
     public static <V> Throwable cause(CompletableFuture<V> completableFuture) {
         if (!completableFuture.isCompletedExceptionally()) {
             return null;
