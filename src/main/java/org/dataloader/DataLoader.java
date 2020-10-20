@@ -378,10 +378,13 @@ public class DataLoader<K, V> {
         // 默认配置
         DataLoaderOptions loaderOptions = options == null ? new DataLoaderOptions() : options;
 
+        // fixme cache数据在 DataLoaderOptions 类中指定
         this.cacheMap = determineCacheMap(loaderOptions);
+
         // order of keys matter in data loader
         this.stats = nonNull(loaderOptions.getStatisticsCollector());
 
+        // fixme helper 使用当前对象作为 help 的属性
         this.helper = new DataLoaderHelper<>(this, batchLoadFunction, loaderOptions, this.cacheMap, this.stats);
     }
 
@@ -485,35 +488,59 @@ public class DataLoader<K, V> {
         return loadMany(keys, Collections.emptyList());
     }
 
-    /**
-     * Requests to load the list of data provided by the specified keys asynchronously, and returns a composite future
-     * of the resulting values.
+    /**fixme 重要：If you forget this call the future will never be completed。
+     *
+     * Requests to load the list of data provided by the specified keys asynchronously,
+     * and returns a composite future of the resulting values.
+     * fixme
+     *      使用指定的key集合、异步请求加载，并且返回 结果future。
+     *      如果允许批量请求，你必须在下一阶段调用 dispatch 来开始批量执行、如果忘了调用此方法、则任务经永远不会执行。
+     *
      * <p>
      * If batching is enabled (the default), you'll have to call {@link DataLoader#dispatch()} at a later stage to
      * start batch execution. If you forget this call the future will never be completed (unless already completed,
      * and returned from cache).
+     *
      * <p>
-     * The key context object may be useful in the batch loader interfaces such as {@link org.dataloader.BatchLoaderWithContext} or
-     * {@link org.dataloader.MappedBatchLoaderWithContext} to help retrieve data.
+     * The key context object may be useful in the batch loader interfaces such as {@link org.dataloader.BatchLoaderWithContext}
+     * or {@link org.dataloader.MappedBatchLoaderWithContext} to help retrieve data.
      *
      * @param keys        the list of keys to load
+     *                    要加载的key参数
+     *
      * @param keyContexts the list of key calling context objects
+     *                    key上下文
+     *
      * @return the composite future of the list of values
+     *         结果
      */
     public CompletableFuture<List<V>> loadMany(List<K> keys, List<Object> keyContexts) {
         nonNull(keys);
         nonNull(keyContexts);
 
+        // fixme dataLoader 使用本身加锁
         synchronized (this) {
             List<CompletableFuture<V>> collect = new ArrayList<>();
+
+            // 遍历key
             for (int i = 0; i < keys.size(); i++) {
+
+                //获取当前key
                 K key = keys.get(i);
+
+                // 获取当前key的上下文
                 Object keyContext = null;
                 if (i < keyContexts.size()) {
                     keyContext = keyContexts.get(i);
                 }
-                collect.add(load(key, keyContext));
+
+                // 当前key的结果
+                CompletableFuture<V> futureByKey = load(key, keyContext);
+
+                // 将结果添加到结果集中
+                collect.add(futureByKey);
             }
+            // 返回任务结果列表
             return CompletableFutureKit.allOf(collect);
         }
     }
@@ -575,13 +602,17 @@ public class DataLoader<K, V> {
 
 
     /**
-     * Clears the future with the specified key from the cache, if caching is enabled, so it will be re-fetched
-     * on the next load request.
+     * Clears the future with the specified key from the cache,
+     * if caching is enabled, so it will be re-fetched on the next load request.
+     *
+     * fixme
+     *      清除指定key的缓存数据。
      *
      * @param key the key to remove
      * @return the data loader for fluent coding
      */
     public DataLoader<K, V> clear(K key) {
+        // 获取缓存key
         Object cacheKey = getCacheKey(key);
         synchronized (this) {
             cacheMap.delete(cacheKey);
@@ -591,6 +622,7 @@ public class DataLoader<K, V> {
 
     /**
      * Clears the entire cache map of the loader.
+     * fixme 清除dataLoader中所有的缓存数据。
      *
      * @return the data loader for fluent coding
      */
@@ -602,7 +634,8 @@ public class DataLoader<K, V> {
     }
 
     /**
-     * Primes the cache with the given key and value.
+     * Primes(是准备好) the cache with the given key and value.
+     * fixme 使用指定的 k-v 构造缓存
      *
      * @param key   the key
      * @param value the value
@@ -620,6 +653,7 @@ public class DataLoader<K, V> {
 
     /**
      * Primes the cache with the given key and error.
+     * fixme 将指定的key和错误信息保存在缓存中。
      *
      * @param key   the key
      * @param error the exception to prime instead of a value
@@ -634,8 +668,10 @@ public class DataLoader<K, V> {
     }
 
     /**
-     * Gets the object that is used in the internal cache map as key, by applying the cache key function to
-     * the provided key.
+     * Gets the object that is used in the internal cache map as key,
+     * by applying the cache key function to the provided key.
+     * fixme 获取请求key对应的缓存key。
+     *
      * <p>
      * If no cache key function is present in {@link DataLoaderOptions}, then the returned value equals the input key.
      *
@@ -647,10 +683,12 @@ public class DataLoader<K, V> {
     }
 
     /**
-     * Gets the statistics associated with this data loader.  These will have been gather via
-     * the {@link org.dataloader.stats.StatisticsCollector} passed in via {@link DataLoaderOptions#getStatisticsCollector()}
+     * Gets the statistics associated with this data loader.
+     * These will have been gather via the {@link org.dataloader.stats.StatisticsCollector}
+     * passed in via {@link DataLoaderOptions#getStatisticsCollector()}
      *
      * @return statistics for this data loader
+     *         fixme 该 dataLoader 相关的统计数据
      */
     public Statistics getStatistics() {
         return stats.getStatistics();

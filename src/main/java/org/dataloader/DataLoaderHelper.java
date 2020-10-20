@@ -30,7 +30,6 @@ import static org.dataloader.impl.Assertions.nonNull;
 @Internal
 class DataLoaderHelper<K, V> {
 
-
     /**
      * 内部类：任务元素
      */
@@ -62,6 +61,10 @@ class DataLoaderHelper<K, V> {
         }
     }
 
+    /**
+     * 1. 加锁操作；
+     * 2.
+     */
     private final DataLoader<K, V> dataLoader;
 
     //批量加载函数
@@ -176,8 +179,9 @@ class DataLoaderHelper<K, V> {
         }
     }
 
-    //根据key获取缓存的cacheKey
-    @SuppressWarnings("unchecked")
+    /**
+     * 获取请求key、对应的缓存key
+     */
     Object getCacheKey(K key) {
         if (loaderOptions.cacheKeyFunction().isPresent()) {
             // 对输入的key进行了一次包装、然后转换为缓存key.
@@ -195,6 +199,7 @@ class DataLoaderHelper<K, V> {
 
         /**
          * we copy the pre-loaded set of futures ready for dispatch
+         *
          * dataLoader的key、value和调用上下文
          */
         List<K> keys = new ArrayList<>();
@@ -361,7 +366,6 @@ class DataLoaderHelper<K, V> {
             keys.forEach(dataLoader::clear);
         }
     }
-
 
 
     CompletableFuture<V> invokeLoaderImmediately(K key, Object keyContext) {

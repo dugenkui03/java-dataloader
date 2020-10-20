@@ -23,6 +23,7 @@ public class DataLoaderRegistry {
 
     /**
      * This will register a new dataloader.
+     * 注册dataLoader
      *
      * @param key        the key to put the data loader under dataLoader对应的key
      * @param dataLoader the data loader to register 要注册的dataLoader
@@ -101,6 +102,7 @@ public class DataLoaderRegistry {
 
     /**
      * @return the keys of the data loaders in this registry
+     *         该注册器中所有 dataLoader 的key
      */
     public Set<String> getKeys() {
         return new HashSet<>(dataLoaders.keySet());
@@ -143,8 +145,9 @@ public class DataLoaderRegistry {
     }
 
     /**
-     * @return a combined set of statistics for all data loaders in this registry presented
-     * as the sum of all their statistics
+     * @return a combined set of statistics for all data loaders
+     *         in this registry presented as the sum of all their statistics
+     *         将该注册器中所有 dataLoader 的统计数据、合并成一个，返回
      */
     public Statistics getStatistics() {
         Statistics stats = new Statistics();
