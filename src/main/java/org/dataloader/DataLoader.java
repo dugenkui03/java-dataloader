@@ -474,8 +474,8 @@ public class DataLoader<K, V> {
     }
 
     /**
-     * Requests to load the list of data provided by the specified keys asynchronously, and returns a composite future
-     * of the resulting values.
+     * Requests to load the list of data provided by the specified keys asynchronously,
+     * and returns a composite future of the resulting values.
      * <p>
      * If batching is enabled (the default), you'll have to call {@link DataLoader#dispatch()} at a later stage to
      * start batch execution. If you forget this call the future will never be completed (unless already completed,
@@ -494,7 +494,7 @@ public class DataLoader<K, V> {
      * and returns a composite future of the resulting values.
      * fixme
      *      使用指定的key集合、异步请求加载，并且返回 结果future。
-     *      如果允许批量请求，你必须在下一阶段调用 dispatch 来开始批量执行、如果忘了调用此方法、则任务经永远不会执行。
+     *      如果允许批量请求，你必须在下一阶段调用 dispatch 来开始批量执行、如果忘了调用此方法、则任务经永远不会完成。
      *
      * <p>
      * If batching is enabled (the default), you'll have to call {@link DataLoader#dispatch()} at a later stage to
@@ -542,7 +542,7 @@ public class DataLoader<K, V> {
             }
             // 返回任务结果列表
             return CompletableFutureKit.allOf(collect);
-        }
+        }// end of 加锁
     }
 
     /**
