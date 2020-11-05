@@ -129,13 +129,19 @@ class DataLoaderHelper<K, V> {
 
 
     /**
-     * 加载数据
-     * @param key 数据key
+     * 使用指定的上下文，加载请求key的数据。
+     *
+     * @param key 请求key
      * @param loadContext 数据加载上下文
+     *
      * @return 数据加载异步结果
      */
     CompletableFuture<V> load(K key, Object loadContext) {
-        //todo 加载数据的时候为啥要加锁？
+
+        /**
+         * fixme
+         *      使用 dataLoader 加锁，说明这个操作有对dataLoader装的的修改；
+         */
         synchronized (dataLoader) {
             // 是否允许批量加载
             boolean batchingEnabled = loaderOptions.batchingEnabled();
@@ -163,6 +169,7 @@ class DataLoaderHelper<K, V> {
             //将请求入队
             CompletableFuture<V> future = new CompletableFuture<>();
             if (batchingEnabled) {
+                // fixme 积攒起来，使用生产者-消费者模式
                 loaderQueue.add(new LoaderQueueEntry<>(key, future, loadContext));
             }
             //如果不允许批处理，则立即请求并返回异步结果

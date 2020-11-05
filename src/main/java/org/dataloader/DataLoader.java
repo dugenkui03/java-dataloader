@@ -406,6 +406,7 @@ public class DataLoader<K, V> {
 
     /**
      * Requests to load the data with the specified key asynchronously, and returns a future of the resulting value.
+     *
      * <p>
      * If batching is enabled (the default), you'll have to call {@link DataLoader#dispatch()} at a later stage to
      * start batch execution. If you forget this call the future will never be completed (unless already completed,
@@ -415,6 +416,7 @@ public class DataLoader<K, V> {
      * @return the future of the value
      */
     public CompletableFuture<V> load(K key) {
+        // 不指定上下文的 load
         return load(key, null);
     }
 
@@ -476,6 +478,9 @@ public class DataLoader<K, V> {
     /**
      * Requests to load the list of data provided by the specified keys asynchronously,
      * and returns a composite future of the resulting values.
+     * fixme
+     *      对key列表元素代表的任务异步请求、然后返回一个list。
+     *
      * <p>
      * If batching is enabled (the default), you'll have to call {@link DataLoader#dispatch()} at a later stage to
      * start batch execution. If you forget this call the future will never be completed (unless already completed,

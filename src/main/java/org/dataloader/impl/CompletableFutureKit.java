@@ -70,6 +70,8 @@ public class CompletableFutureKit {
 
         /**
          * allOf: 当所有的CompletableFuture都执行完后执行计算
+         *
+         * fixme 其中一个出现问题，整个结果都会有问题。
          */
         return CompletableFuture.allOf(cfs.toArray(completableFutures))
                 /**
