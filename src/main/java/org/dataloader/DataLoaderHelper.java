@@ -3,13 +3,7 @@ package org.dataloader;
 import org.dataloader.impl.CompletableFutureKit;
 import org.dataloader.stats.StatisticsCollector;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -67,32 +61,28 @@ class DataLoaderHelper<K, V> {
         this.batchLoadFunction = batchLoadFunction;
         this.loaderOptions = loaderOptions;
         this.futureCache = futureCache;
-        this.loaderQueue = new ArrayList<>();
+        this.loaderQueue = Collections.synchronizedList(new ArrayList<>());
         this.stats = stats;
     }
 
     Optional<CompletableFuture<V>> getIfPresent(K key) {
-        synchronized (dataLoader) {
-            boolean cachingEnabled = loaderOptions.cachingEnabled();
-            if (cachingEnabled) {
-                Object cacheKey = getCacheKey(nonNull(key));
-                if (futureCache.containsKey(cacheKey)) {
-                    stats.incrementCacheHitCount();
-                    return Optional.of(futureCache.get(cacheKey));
-                }
+        boolean cachingEnabled = loaderOptions.cachingEnabled();
+        if (cachingEnabled) {
+            Object cacheKey = getCacheKey(nonNull(key));
+            if (futureCache.containsKey(cacheKey)) {
+                stats.incrementCacheHitCount();
+                return Optional.of(futureCache.get(cacheKey));
             }
         }
         return Optional.empty();
     }
 
     Optional<CompletableFuture<V>> getIfCompleted(K key) {
-        synchronized (dataLoader) {
-            Optional<CompletableFuture<V>> cachedPromise = getIfPresent(key);
-            if (cachedPromise.isPresent()) {
-                CompletableFuture<V> promise = cachedPromise.get();
-                if (promise.isDone()) {
-                    return cachedPromise;
-                }
+        Optional<CompletableFuture<V>> cachedPromise = getIfPresent(key);
+        if (cachedPromise.isPresent()) {
+            CompletableFuture<V> promise = cachedPromise.get();
+            if (promise.isDone()) {
+                return cachedPromise;
             }
         }
         return Optional.empty();
@@ -100,33 +90,31 @@ class DataLoaderHelper<K, V> {
 
 
     CompletableFuture<V> load(K key, Object loadContext) {
-        synchronized (dataLoader) {
-            boolean batchingEnabled = loaderOptions.batchingEnabled();
-            boolean cachingEnabled = loaderOptions.cachingEnabled();
+        boolean batchingEnabled = loaderOptions.batchingEnabled();
+        boolean cachingEnabled = loaderOptions.cachingEnabled();
 
-            Object cacheKey = cachingEnabled ? getCacheKey(nonNull(key)) : null;
-            stats.incrementLoadCount();
+        Object cacheKey = cachingEnabled ? getCacheKey(nonNull(key)) : null;
+        stats.incrementLoadCount();
 
-            if (cachingEnabled) {
-                if (futureCache.containsKey(cacheKey)) {
-                    stats.incrementCacheHitCount();
-                    return futureCache.get(cacheKey);
-                }
+        if (cachingEnabled) {
+            if (futureCache.containsKey(cacheKey)) {
+                stats.incrementCacheHitCount();
+                return futureCache.get(cacheKey);
             }
-
-            CompletableFuture<V> future = new CompletableFuture<>();
-            if (batchingEnabled) {
-                loaderQueue.add(new LoaderQueueEntry<>(key, future, loadContext));
-            } else {
-                stats.incrementBatchLoadCountBy(1);
-                // immediate execution of batch function
-                future = invokeLoaderImmediately(key, loadContext);
-            }
-            if (cachingEnabled) {
-                futureCache.set(cacheKey, future);
-            }
-            return future;
         }
+
+        CompletableFuture<V> future = new CompletableFuture<>();
+        if (batchingEnabled) {
+            loaderQueue.add(new LoaderQueueEntry<>(key, future, loadContext));
+        } else {
+            stats.incrementBatchLoadCountBy(1);
+            // immediate execution of batch function
+            future = invokeLoaderImmediately(key, loadContext);
+        }
+        if (cachingEnabled) {
+            futureCache.set(cacheKey, future);
+        }
+        return future;
     }
 
     @SuppressWarnings("unchecked")
@@ -142,14 +130,12 @@ class DataLoaderHelper<K, V> {
         final List<K> keys = new ArrayList<>();
         final List<Object> callContexts = new ArrayList<>();
         final List<CompletableFuture<V>> queuedFutures = new ArrayList<>();
-        synchronized (dataLoader) {
-            loaderQueue.forEach(entry -> {
-                keys.add(entry.getKey());
-                queuedFutures.add(entry.getValue());
-                callContexts.add(entry.getCallContext());
-            });
-            loaderQueue.clear();
-        }
+        loaderQueue.forEach(entry -> {
+            keys.add(entry.getKey());
+            queuedFutures.add(entry.getValue());
+            callContexts.add(entry.getCallContext());
+        });
+        loaderQueue.clear();
         if (!batchingEnabled || keys.isEmpty()) {
             return new DispatchResult<>(CompletableFuture.completedFuture(emptyList()), 0);
         }
@@ -344,8 +330,6 @@ class DataLoaderHelper<K, V> {
     }
 
     int dispatchDepth() {
-        synchronized (dataLoader) {
-            return loaderQueue.size();
-        }
+        return loaderQueue.size();
     }
 }

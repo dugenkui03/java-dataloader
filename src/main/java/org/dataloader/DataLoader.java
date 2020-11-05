@@ -446,18 +446,16 @@ public class DataLoader<K, V> {
         nonNull(keys);
         nonNull(keyContexts);
 
-        synchronized (this) {
-            List<CompletableFuture<V>> collect = new ArrayList<>();
-            for (int i = 0; i < keys.size(); i++) {
-                K key = keys.get(i);
-                Object keyContext = null;
-                if (i < keyContexts.size()) {
-                    keyContext = keyContexts.get(i);
-                }
-                collect.add(load(key, keyContext));
+        List<CompletableFuture<V>> collect = new ArrayList<>();
+        for (int i = 0; i < keys.size(); i++) {
+            K key = keys.get(i);
+            Object keyContext = null;
+            if (i < keyContexts.size()) {
+                keyContext = keyContexts.get(i);
             }
-            return CompletableFutureKit.allOf(collect);
+            collect.add(load(key, keyContext));
         }
+        return CompletableFutureKit.allOf(collect);
     }
 
     /**
@@ -520,9 +518,7 @@ public class DataLoader<K, V> {
      */
     public DataLoader<K, V> clear(K key) {
         Object cacheKey = getCacheKey(key);
-        synchronized (this) {
-            futureCache.delete(cacheKey);
-        }
+        futureCache.delete(cacheKey);
         return this;
     }
 
@@ -532,9 +528,7 @@ public class DataLoader<K, V> {
      * @return the data loader for fluent coding
      */
     public DataLoader<K, V> clearAll() {
-        synchronized (this) {
-            futureCache.clear();
-        }
+        futureCache.clear();
         return this;
     }
 
@@ -547,10 +541,8 @@ public class DataLoader<K, V> {
      */
     public DataLoader<K, V> prime(K key, V value) {
         Object cacheKey = getCacheKey(key);
-        synchronized (this) {
-            if (!futureCache.containsKey(cacheKey)) {
-                futureCache.set(cacheKey, CompletableFuture.completedFuture(value));
-            }
+        if (!futureCache.containsKey(cacheKey)) {
+            futureCache.set(cacheKey, CompletableFuture.completedFuture(value));
         }
         return this;
     }

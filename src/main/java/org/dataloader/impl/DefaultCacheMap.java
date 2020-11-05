@@ -21,6 +21,7 @@ import org.dataloader.Internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default implementation of {@link CacheMap} that is based on a regular {@link java.util.LinkedHashMap}.
@@ -39,7 +40,7 @@ public class DefaultCacheMap<U, V> implements CacheMap<U, V> {
      * Default constructor
      */
     public DefaultCacheMap() {
-        cache = new HashMap<>();
+        cache = new ConcurrentHashMap<>();
     }
 
     /**
