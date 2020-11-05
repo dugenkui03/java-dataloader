@@ -16,6 +16,7 @@ import java.util.Map;
  */
 @PublicApi
 public class BatchLoaderEnvironment {
+
     // 批量加载上下文
     private final Object context;
 

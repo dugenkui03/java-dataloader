@@ -11,8 +11,10 @@ import java.util.concurrent.CompletableFuture;
  */
 @PublicApi
 public class DispatchResult<T> {
-    private final int keysCount;
+    //
     private final CompletableFuture<List<T>> futureList;
+    // 结果总数
+    private final int keysCount;
 
     public DispatchResult(CompletableFuture<List<T>> futureList, int keysCount) {
         this.futureList = futureList;

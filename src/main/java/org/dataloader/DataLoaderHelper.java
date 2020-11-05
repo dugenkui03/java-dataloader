@@ -42,6 +42,13 @@ class DataLoaderHelper<K, V> {
         // 请求上下文
         final Object callContext;
 
+        /**
+         * 只有一个使用场景，如下
+         *
+         * @param key loadKey
+         * @param value CompletableFuture<Value>
+         * @param callContext  key上下文
+         */
         public LoaderQueueEntry(K key, V value, Object callContext) {
             this.key = key;
             this.value = value;
@@ -76,7 +83,9 @@ class DataLoaderHelper<K, V> {
     //数据缓存
     private final CacheMap<Object, CompletableFuture<V>> futureCache;
 
-    //任务加载队列
+    /**
+     * todo: 需要知道：key批量加载到队列里边，任务怎么个处理逻辑呢？
+     */
     private final List<LoaderQueueEntry<K, CompletableFuture<V>>> loaderQueue;
 
     //收集Dataloader操作的统计数据
@@ -141,6 +150,9 @@ class DataLoaderHelper<K, V> {
         /**
          * fixme
          *      使用 dataLoader 加锁，说明这个操作有对dataLoader装的的修改；
+         *          1. 缓存操作；
+         *          2. 计数器操作；
+         *          3. 任务队列。
          */
         synchronized (dataLoader) {
             // 是否允许批量加载
@@ -165,11 +177,13 @@ class DataLoaderHelper<K, V> {
                 }
             }
 
-
+            /**
+             * ============================================ 非缓存逻辑：是否批量 ==================================================================
+             */
             //将请求入队
             CompletableFuture<V> future = new CompletableFuture<>();
             if (batchingEnabled) {
-                // fixme 积攒起来，使用生产者-消费者模式
+                // fixme 将任务包装为 LoaderQueueEntry 对象，加入到任务队列里边
                 loaderQueue.add(new LoaderQueueEntry<>(key, future, loadContext));
             }
             //如果不允许批处理，则立即请求并返回异步结果
@@ -178,6 +192,11 @@ class DataLoaderHelper<K, V> {
                 // immediate execution of batch function
                 future = invokeLoaderImmediately(key, loadContext);
             }
+            /**
+             * ============================================ 非缓存逻辑 end ==================================================================
+             */
+
+
             //是否允许缓存
             if (cachingEnabled) {
                 futureCache.set(cacheKey, future);
@@ -206,19 +225,22 @@ class DataLoaderHelper<K, V> {
 
         /**
          * we copy the pre-loaded set of futures ready for dispatch
-         *
-         * dataLoader的key、value和调用上下文
          */
+
+        // 调用key列表
         List<K> keys = new ArrayList<>();
-        List<Object> callContexts = new ArrayList<>();
+        // 结果异步封装列表
         List<CompletableFuture<V>> queuedFutures = new ArrayList<>();
+        // 调用key上下文列表
+        List<Object> callContexts = new ArrayList<>();
         synchronized (dataLoader) {
+            // todo 1.
             for (LoaderQueueEntry<K, CompletableFuture<V>> entry : loaderQueue) {
                 //加载key
                 keys.add(entry.getKey());
-                //对应的异步value结果
+                //对应的异步结果封装：CompletableFuture<value>
                 queuedFutures.add(entry.getValue());
-                //上下文
+                //key上下文
                 callContexts.add(entry.getCallContext());
             }
             //清空任务队列
@@ -229,6 +251,7 @@ class DataLoaderHelper<K, V> {
         if (!batchingEnabled || keys.isEmpty()) {
             return new DispatchResult<>(CompletableFuture.completedFuture(emptyList()), 0);
         }
+
         final int totalEntriesHandled = keys.size();
 
         // order of keys -> values matter in data loader hence the use of linked hash map
@@ -237,14 +260,15 @@ class DataLoaderHelper<K, V> {
         // fixme key的顺序关系重大、所以使用 LinkedHashMap
 
         //
-        // 最大的批处理容量
         // when the promised list of values completes, we transfer the values into
         // the previously cached future objects that the client already has been given
         // via calls to load("foo") and loadMany(["foo","bar"])
+        //
+        // fixme 最大的批处理容量
         int maxBatchSize = loaderOptions.maxBatchSize();
         CompletableFuture<List<V>> futureList;
-
-        //如果设置了 最大批处理大小，而且当前的keys的数量大于 批.size()，则进行分批处理
+        // 如果设置了 最大批处理大小，而且当前的keys的数量大于 批.size()
+        // 则进行分批处理：sliceIntoBatchesOfBatches 里边有for循环；
         if (maxBatchSize > 0 && maxBatchSize < keys.size()) {
             futureList = sliceIntoBatchesOfBatches(keys, queuedFutures, callContexts, maxBatchSize);
         }
@@ -295,7 +319,6 @@ class DataLoaderHelper<K, V> {
 
     /**
      * fixme 最重要的批处理方法
-     *
      *
      * @param keys 调用入参
      * @param callContexts  调用上下文
@@ -463,11 +486,16 @@ class DataLoaderHelper<K, V> {
     private CompletionStage<List<V>> invokeMapBatchLoader(List<K> keys, BatchLoaderEnvironment environment) {
         CompletionStage<Map<K, V>> loadResult;
         Set<K> setOfKeys = new LinkedHashSet<>(keys);
+
+        /**
+         * MappedBatchLoader 是否有 调用上下文信息
+         */
         if (batchLoadFunction instanceof MappedBatchLoaderWithContext) {
             loadResult = ((MappedBatchLoaderWithContext<K, V>) batchLoadFunction).load(setOfKeys, environment);
         } else {
             loadResult = ((MappedBatchLoader<K, V>) batchLoadFunction).load(setOfKeys);
         }
+
         CompletionStage<Map<K, V>> mapBatchLoad = nonNull(loadResult, "Your batch loader function MUST return a non null CompletionStage promise");
         return mapBatchLoad.thenApply(map -> {
             List<V> values = new ArrayList<>();
