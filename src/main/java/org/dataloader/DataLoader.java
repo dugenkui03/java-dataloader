@@ -563,6 +563,7 @@ public class DataLoader<K, V> {
      * @return the promise of the queued load requests
      */
     public CompletableFuture<List<V>> dispatch() {
+        // 只获取结果，不获取个数
         return helper.dispatch().getPromisedResults();
     }
 
@@ -600,6 +601,7 @@ public class DataLoader<K, V> {
 
     /**
      * @return the depth of the batched key loads that need to be dispatched
+     *         任务的数量
      */
     public int dispatchDepth() {
         return helper.dispatchDepth();

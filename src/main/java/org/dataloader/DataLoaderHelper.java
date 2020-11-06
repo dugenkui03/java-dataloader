@@ -514,6 +514,7 @@ class DataLoaderHelper<K, V> {
         return batchLoadFunction instanceof MappedBatchLoader || batchLoadFunction instanceof MappedBatchLoaderWithContext;
     }
 
+    // 任务的数量
     int dispatchDepth() {
         synchronized (dataLoader) {
             return loaderQueue.size();

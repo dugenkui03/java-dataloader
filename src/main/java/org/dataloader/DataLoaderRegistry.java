@@ -43,6 +43,8 @@ public class DataLoaderRegistry {
      *
      * @param key             the key of the data loader
      * @param mappingFunction the function to compute a data loader
+     *                        如果指定的key没有对应的dataLoader，则根据key创建一个dataLoader
+     *
      * @param <K>             the type of keys
      * @param <V>             the type of values
      * @return a data loader
@@ -58,6 +60,8 @@ public class DataLoaderRegistry {
      * and all the data loaders from the specified registry
      * and return a new combined registry
      *
+     * fixme 将当前对象的dataLoader和指定的dataLoader合并成一个dataLoader返回。
+     *
      * @param registry the registry to combine into this registry
      * @return a new combined registry
      */
@@ -71,13 +75,15 @@ public class DataLoaderRegistry {
 
     /**
      * @return the currently registered data loaders
+     *         fixme 返回当前注册器中的所有dataLoader.
      */
     public List<DataLoader<?, ?>> getDataLoaders() {
         return new ArrayList<>(dataLoaders.values());
     }
 
     /**
-     * This will unregister a new dataloader 取消对某个dataloader的注册
+     * This will unregister a new data loader
+     * fixme 取消对某个data loader的注册
      *
      * @param key the key of the data loader to unregister
      * @return this registry
@@ -88,7 +94,8 @@ public class DataLoaderRegistry {
     }
 
     /**
-     * Returns the dataloader that was registered under the specified key
+     * Returns the data loader that was registered under the specified key
+     * fixme 获取指定key的dataLoader。
      *
      * @param key the key of the data loader
      * @param <K> the type of keys
@@ -102,13 +109,16 @@ public class DataLoaderRegistry {
 
     /**
      * @return the keys of the data loaders in this registry
-     *         该注册器中所有 dataLoader 的key
+     *         fixme 该注册器中所有 dataLoader 的key
      */
     public Set<String> getKeys() {
         return new HashSet<>(dataLoaders.keySet());
     }
 
     /**
+     * fixme 重中之重：
+     *      调度该注册器中所有的 data loader，但是并不获取结果
+     *
      * This will called {@link DataLoader#dispatch()} on each of the registered
      *
      * {@link org.dataloader.DataLoader}s
@@ -122,6 +132,7 @@ public class DataLoaderRegistry {
      * each of the registered {@link DataLoader}s, but returns the number of dispatches.
      *
      * @return total number of entries that were dispatched from registered {@link DataLoader}s.
+     *         所有data loader结果总数。
      */
     public int dispatchAllWithCount() {
         int sum = 0;
