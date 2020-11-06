@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * This holds statistics on how a {@link org.dataloader.DataLoader} has performed
  *
- * 对于 DataLoader 的统计数据。
+ * 对于 DataLoader 的统计数据，使用参见 {@link SimpleStatisticsCollector#getStatistics()}
  */
 @PublicApi
 public class Statistics {

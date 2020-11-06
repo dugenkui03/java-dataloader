@@ -145,7 +145,7 @@ public class DataLoaderRegistry {
     /**
      * @return The sum of all batched key loads
      *         that need to be dispatched from all registered {@link DataLoader}s
-     *         加载的key的数量。
+     *         fixme 所有注册的dataLoader的 key的 数量。
      */
     public int dispatchDepth() {
         int totalDispatchDepth = 0;
@@ -158,7 +158,7 @@ public class DataLoaderRegistry {
     /**
      * @return a combined set of statistics for all data loaders
      *         in this registry presented as the sum of all their statistics
-     *         将该注册器中所有 dataLoader 的统计数据、合并成一个，返回
+     *         将该注册器中所有 dataLoader 的统计数据、合并成一个
      */
     public Statistics getStatistics() {
         Statistics stats = new Statistics();
