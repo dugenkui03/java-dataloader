@@ -570,6 +570,8 @@ public class DataLoader<K, V> {
     /**
      * Dispatches the queued load requests to the batch execution function and returns both the promise of the result
      * and the number of entries that were dispatched.
+     *
+     * fixme 操作同 dispatch，但是获取了结果个数。
      * <p>
      * If batching is disabled, or there are no queued requests, then a succeeded promise with no entries dispatched is
      * returned.
@@ -581,16 +583,23 @@ public class DataLoader<K, V> {
     }
 
     /**
-     * Normally {@link #dispatch()} is an asynchronous operation but this version will 'join' on the
-     * results if dispatch and wait for them to complete.  If the {@link CompletableFuture} callbacks make more
-     * calls to this data loader then the {@link #dispatchDepth()} will be &gt; 0 and this method will loop
+     * Normally {@link #dispatch()} is an asynchronous operation
+     * but this version will 'join' on the results if dispatch and wait
+     * for them to complete.  If the {@link CompletableFuture} callbacks
+     * make more calls to this data loader then the {@link #dispatchDepth()}
+     * will be &gt; 0 and this method will loop
      * around and wait for any other extra batch loads to occur.
      *
      * @return the list of all results when the {@link #dispatchDepth()} reached 0
      */
     public List<V> dispatchAndJoin() {
+        // 获取任务结果集
         List<V> joinedResults = dispatch().join();
+
+        // 拷贝任务结果集
         List<V> results = new ArrayList<>(joinedResults);
+
+        // fixme 在任务清空前不返回。
         while (this.dispatchDepth() > 0) {
             joinedResults = dispatch().join();
             results.addAll(joinedResults);

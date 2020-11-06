@@ -247,7 +247,7 @@ class DataLoaderHelper<K, V> {
             loaderQueue.clear();
         }
 
-        //如果不允许批量加载、或者当前key是空的，则直接返回空值
+        //fixme 如果不允许批量加载、或者当前key是空的，则直接返回空值
         if (!batchingEnabled || keys.isEmpty()) {
             return new DispatchResult<>(CompletableFuture.completedFuture(emptyList()), 0);
         }
