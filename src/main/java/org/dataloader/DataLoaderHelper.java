@@ -35,8 +35,9 @@ class DataLoaderHelper<K, V> {
      */
     static class LoaderQueueEntry<K, V> {
 
-        //k-v
+        //k loader的参数
         final K key;
+        // 异步任务
         final V value;
 
         // 请求上下文
@@ -236,11 +237,11 @@ class DataLoaderHelper<K, V> {
         synchronized (dataLoader) {
             // todo 1.
             for (LoaderQueueEntry<K, CompletableFuture<V>> entry : loaderQueue) {
-                //加载key
+                // loader 请求参数
                 keys.add(entry.getKey());
-                //对应的异步结果封装：CompletableFuture<value>
+                // 对应的异步结果封装：CompletableFuture<value>
                 queuedFutures.add(entry.getValue());
-                //key上下文
+                // 请求上下文
                 callContexts.add(entry.getCallContext());
             }
             //清空任务队列
